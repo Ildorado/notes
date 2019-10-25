@@ -1,17 +1,41 @@
 import React from 'react';
 import './notes.scss';
+
 import { connect } from 'react-redux';
-import { } from './actions';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-library.add(fab, faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt)
+import { newNote, noteTextChange, deleteNote } from './actions';
+library.add(fab, faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt, faTimesCircle)
+
+//  { notes:[ {id note,tags},{id note,tags},{id note,tags} ] }
 const mapStateToProps = state => {
+  if (state.notes === false) {
+    return { notes: [] };
+  }
   return {
-    // userName: state.userName,
-    // groupMessage: state.groupMessage
+    notes: state.notes
   };
+}
+class Note extends React.Component {
+  handleChange = event => {
+    console.log('this.props in handleChange:', this.props);
+    this.props.dispatch(noteTextChange(this.props.index, event.target.value));
+  }
+  handleDelete = event => {
+    this.props.dispatch(deleteNote(this.props.index));
+  }
+  render() {
+    console.log('this.props:', this.props)
+    return (
+      <div className="note-node">
+        <textarea className="note-node__textarea" value={this.props.note} onChange={this.handleChange} ></textarea>
+        <input className="note-node__tags" type="text" placeholder="tags are here..."></input>
+        <button className="note-note__delete" onClick={this.handleDelete}><FontAwesomeIcon icon="times-circle" /></button>
+      </div>
+    );
+  }
 }
 class Notes extends React.Component {
   constructor(props) {
@@ -26,32 +50,24 @@ class Notes extends React.Component {
       value: event.target.value
     })
   }
+  newTag = () => {
+    this.props.dispatch(newNote());
+  }
   render() {
+    console.log(this.props);
     return (
       <main className="notes-window">
-        <div className="tags-controller">
-          <div className="tags-toolbar">
-            <button name="newTag" type="button" className="button" title="new tag"> <FontAwesomeIcon icon="plus-circle" /></button>
-            <button name="deleteTag" type="button" className="button" title="delete tag"> <FontAwesomeIcon icon="minus-circle" /></button>
-          </div>
-          <div className="tags-controller__tag">Test tag</div>
+        <input type="text" className="tags-filter" placeholder="tags filter ..."></input>
+        <div className="notes-toolbar">
+          <button name="newTag" type="button" className="button" title="new note" onClick={this.newTag}> <FontAwesomeIcon icon="file-alt" /></button>
         </div>
-        <div className="notes-controller">
-          <div className="notes-toolbar">
-            <button name="newTag" type="button" className="button" title="new note"> <FontAwesomeIcon icon="file-alt" /></button>
-            <button name="newTag" type="button" className="button" title="delete note"> <FontAwesomeIcon icon="trash-alt" /></button>
-            <button name="newTag" type="button" className="button" title="rename note"> <FontAwesomeIcon icon="exchange-alt" /></button>
-          </div>
-          <div className="notes-list">
-            <div className="note-node" tabIndex="-1">This is test note</div>
-            <div className="note-node" tabIndex="-1">This is test note</div>
-            <div className="note-node" tabIndex="-1"> This is test note</div>
-            <div className="note-node" tabIndex="-1">This is test note</div>
-          </div>
-        </div>
-        <form className="notes-editing">
-          <textarea class="textarea" value={this.state.value} onChange ={this.handleChange} ></textarea>
-        </form>
+        <ul className="notes-container">
+          {
+            this.props.notes.notes.map((data, index) => (
+              <Note key={data.id} index={index} note={data.note} tags={data.tags} dispatch={this.props.dispatch}></Note>
+            ))
+          }
+        </ul>
       </main>
     );
   }

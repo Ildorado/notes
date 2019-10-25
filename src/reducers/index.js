@@ -1,11 +1,24 @@
-import messageReducer from './recieveMessage';
-import userNameReducer from './setUserName'
-// import setMessageReducer from './setMessage'
+import shortid from 'shortid';
 import { combineReducers } from 'redux';
-
+//  { notes:[ {id,note,tags},{id,note,tags},{id,note,tags} ] }
+const notesReducer = (state = { notes: [] }, action) => {
+    let newState = JSON.parse(JSON.stringify(state));
+    switch (action.type) {
+        case 'NEWNOTE':
+            newState.notes.push({ id: shortid.generate(), note: '', tags: '' })
+            return newState;
+        case 'NOTETEXTCHANGE':
+            newState.notes[action.index].note = action.text;
+            return newState;
+        case 'DELETENOTE':
+            newState.notes.splice(action.index, 1);
+            return newState;
+        default:
+            return state
+    }
+}
 const rootReducer = combineReducers({
-    groupMessage: messageReducer,
-    userName: userNameReducer,
+    notes: notesReducer,
     // messageText: setMessageReducer
 })
 export default rootReducer;

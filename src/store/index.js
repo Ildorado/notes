@@ -7,7 +7,6 @@ const persistConfig = {
     key: 'root',
     storage,
     stateReconciler: autoMergeLevel2 ,
-    blacklist: ['groupMessage']
 }
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
