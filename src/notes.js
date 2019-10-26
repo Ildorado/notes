@@ -1,14 +1,13 @@
 import React from 'react';
 import './notes.scss';
-
 import { connect } from 'react-redux';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { newNote, noteTextChange, deleteNote } from './actions';
+import TagsInput from 'react-tagsinput'
+import { newNote, noteTextChange, deleteNote, changeTags } from './actions';
 library.add(fab, faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt, faTimesCircle)
-
 //  { notes:[ {id note,tags},{id note,tags},{id note,tags} ] }
 const mapStateToProps = state => {
   if (state.notes === false) {
@@ -19,52 +18,90 @@ const mapStateToProps = state => {
   };
 }
 class Note extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tagging: false,
+      tagWord: ''
+    }
+  }
   handleChange = event => {
-    console.log('this.props in handleChange:', this.props);
-    this.props.dispatch(noteTextChange(this.props.index, event.target.value));
+    let result = event.target.value;
+    if (result.match(/#\S+\s/g) !== null) {
+      let newTags = result.match(/#\S+\s/g);
+      newTags.forEach(newTag => {
+        let newTagTrimmed = newTag.trim().slice(1);
+        if (this.props.tags.includes(newTagTrimmed) === false) {
+          this.props.dispatch(changeTags(this.props.index, this.props.tags.concat(newTagTrimmed)));
+        }
+        result = result.replace('#', '');
+      })
+    }
+    this.props.dispatch(noteTextChange(this.props.index, result));
+  }
+  handleTagsChange = (tags) => {
+    this.props.dispatch(changeTags(this.props.index, tags));
   }
   handleDelete = event => {
     this.props.dispatch(deleteNote(this.props.index));
   }
+  ifInSearch() {
+    if (this.props.searchTags.length === 0) {
+      return true;
+    }
+    for (let i = 0; i < this.props.searchTags.length; i++) {
+      if (!this.props.tags.includes(this.props.searchTags[i])) {
+        return false;
+      }
+    }
+    return true
+  }
   render() {
-    console.log('this.props:', this.props)
-    return (
-      <div className="note-node">
-        <textarea className="note-node__textarea" value={this.props.note} onChange={this.handleChange} ></textarea>
-        <input className="note-node__tags" type="text" placeholder="tags are here..."></input>
-        <button className="note-note__delete" onClick={this.handleDelete}><FontAwesomeIcon icon="times-circle" /></button>
-      </div>
-    );
+    if (this.ifInSearch()) {
+      return (
+        <div className="note-node">
+          <textarea className="note-node__textarea" value={this.props.note} onChange={this.handleChange} ></textarea>
+          <TagsInput className="tags-filter" value={this.props.tags} inputProps={{
+            className: 'react-tagsinput-input',
+            placeholder: ''
+          }} onChange={this.handleTagsChange.bind(this)}></TagsInput>
+          <button className="note-note__delete" onClick={this.handleDelete}><FontAwesomeIcon icon="times-circle" /></button>
+        </div>
+      );
+    } else { return null }
   }
 }
 class Notes extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      value: '',
-    }
+    this.state = { tags: [] }
   };
   handleChange = event => {
     this.setState({
       value: event.target.value
     })
   }
-  newTag = () => {
+  newNoteSend = () => {
     this.props.dispatch(newNote());
   }
+  handleTagsChange(tags) {
+    this.setState({ tags })
+  }
   render() {
-    console.log(this.props);
     return (
       <main className="notes-window">
-        <input type="text" className="tags-filter" placeholder="tags filter ..."></input>
+        <TagsInput className="tags-filter" value={this.state.tags} inputProps={{
+          className: 'react-tagsinput-input',
+          placeholder: 'Add tags'
+        }} onChange={this.handleTagsChange.bind(this)}></TagsInput>
         <div className="notes-toolbar">
-          <button name="newTag" type="button" className="button" title="new note" onClick={this.newTag}> <FontAwesomeIcon icon="file-alt" /></button>
+          <button name="newTag" type="button" className="button" title="new note" onClick={this.newNoteSend}> <FontAwesomeIcon icon="file-alt" /></button>
         </div>
         <ul className="notes-container">
           {
             this.props.notes.notes.map((data, index) => (
-              <Note key={data.id} index={index} note={data.note} tags={data.tags} dispatch={this.props.dispatch}></Note>
+              <Note key={data.id} index={index} note={data.note} tags={data.tags} searchTags={this.state.tags} dispatch={this.props.dispatch}></Note>
             ))
           }
         </ul>
