@@ -22,6 +22,5 @@ const notesReducer = (state = { notes: [] }, action) => {
 }
 const rootReducer = combineReducers({
     notes: notesReducer,
-    // messageText: setMessageReducer
 })
 export default rootReducer;
