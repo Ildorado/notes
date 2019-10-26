@@ -1,4 +1,4 @@
-@import 'TagInput';
+@import "TagInput";
 $primary-color: #e6e7e8;
 html {
   height: 100%;
@@ -45,13 +45,11 @@ body {
   align-items: center;
   width: 100%;
   padding: 0;
-  overflow-y: scroll;
   justify-content: flex-end;
   padding: 1rem 0;
-  height: 100%;
 }
 .tags-filter {
-  display:flex;
+  display: flex;
   width: 80%;
   margin: 1rem 2rem;
   height: 2rem;
@@ -73,16 +71,29 @@ body {
   .note-node__textarea {
     resize: none;
     outline: none;
+    font-size: 1rem;
     min-height: 4rem;
     max-height: 5rem;
     min-width: 90%;
     width: 90%;
     max-width: 90%;
-    border:0.5px solid $primary-color;
+    border: 0.5px solid $primary-color;
     border-top: none;
   }
   .note-note__delete {
-  position: absolute;
-  right:0;
+    position: absolute;
+    right: 0;
   }
+}
+.YourHighlightClass {
+  background-color: orange;
+}
+.HighLight {
+  font-size: 1rem;
+  height: 4rem;
+  min-width: 90%;
+  width: 90%;
+  max-width: 90%;
+  border: 0.5px solid $primary-color;
+  border-top: none;
 }

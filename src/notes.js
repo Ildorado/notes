@@ -7,6 +7,7 @@ import { faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt, faTi
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import TagsInput from 'react-tagsinput'
 import { newNote, noteTextChange, deleteNote, changeTags } from './actions';
+import Highlighter from "react-highlight-words";
 library.add(fab, faPlusCircle, faMinusCircle, faTrashAlt, faExchangeAlt, faFileAlt, faTimesCircle)
 //  { notes:[ {id note,tags},{id note,tags},{id note,tags} ] }
 const mapStateToProps = state => {
@@ -21,8 +22,7 @@ class Note extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tagging: false,
-      tagWord: ''
+      focus: false,
     }
   }
   handleChange = event => {
@@ -56,11 +56,31 @@ class Note extends React.Component {
     }
     return true
   }
+  onFocusOn() {
+    this.setState({
+      focus: true,
+    })
+  }
+  onFocusOff() {
+    this.setState({
+      focus: false
+    })
+  }
+
   render() {
     if (this.ifInSearch()) {
       return (
-        <div className="note-node">
-          <textarea className="note-node__textarea" value={this.props.note} onChange={this.handleChange} ></textarea>
+        <div className="note-node" onMouseLeave={this.onFocusOff.bind(this)} onClick={this.onFocusOn.bind(this)}>
+          {this.state.focus ? (<textarea className="note-node__textarea" value={this.props.note} onChange={this.handleChange} >
+          </textarea>) : (<Highlighter
+          className ="HighLight"
+            highlightClassName="YourHighlightClass"
+            searchWords={this.props.tags}
+            autoEscape={true}
+            textToHighlight={this.props.note}
+          />)}
+          {/* <textarea className="note-node__textarea" value={this.props.note} onChange={this.handleChange} >
+          </textarea> */}
           <TagsInput className="tags-filter" value={this.props.tags} inputProps={{
             className: 'react-tagsinput-input',
             placeholder: ''
@@ -92,8 +112,8 @@ class Notes extends React.Component {
     return (
       <main className="notes-window">
         <TagsInput className="tags-filter" value={this.state.tags} inputProps={{
-          className: 'react-tagsinput-input',
-          placeholder: 'Add tags'
+          className: 'react-tagsinput-input search-tags',
+          placeholder: 'search tags...'
         }} onChange={this.handleTagsChange.bind(this)}></TagsInput>
         <div className="notes-toolbar">
           <button name="newTag" type="button" className="button" title="new note" onClick={this.newNoteSend}> <FontAwesomeIcon icon="file-alt" /></button>
