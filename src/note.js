@@ -80,7 +80,7 @@ class Note extends React.Component {
                             onFocus={this.onFocusOn}
                             className="HighLight"
                             highlightClassName="YourHighlightClass"
-                            searchWords={this.props.tags.map(item => '#' + item)}
+                            searchWords={this.props.tags}
                             autoEscape={true}
                             textToHighlight={this.props.note}
                             tabIndex='1'
