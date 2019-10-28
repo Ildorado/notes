@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TagsInput from 'react-tagsinput'
 import { newNote} from './actions';
 import Note from './note'
-//  { notes:[ {id note,tags},{id note,tags},{id note,tags} ] }
+// notes = { notes:[ {id note,tags},{id note,tags},{id note,tags} ] }
 const mapStateToProps = state => {
   if (state.notes === false) {
     return { notes: [] };
@@ -24,11 +24,6 @@ class Notes extends React.Component {
     this.notesRef = React.createRef();
 
   };
-  handleChange = event => {
-    this.setState({
-      value: event.target.value
-    })
-  }
   newNoteSend = () => {
     this.props.dispatch(newNote());
     this.scrollToTop();
@@ -39,7 +34,7 @@ class Notes extends React.Component {
       behavior: 'smooth'
     })
   }
-  handleTagsChange(tags,changed,changedIndexes) {
+  handleTagsChange(tags) {
     this.setState({ tags })
   }
   render() {

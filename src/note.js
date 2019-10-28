@@ -29,15 +29,12 @@ class Note extends React.Component {
         this.props.dispatch(noteTextChange(this.props.index, result));
     }
     handleTagsChange = (tags, changed) => {
-        console.log('tags: ', tags);
-        console.log('changed: ', changed);
         changed.forEach(item => {
             if (!tags.includes(item)) {
                 let newNote = this.props.note;
                 let regEx = new RegExp(`#${item}`, 'gi');
                 while (newNote.match(regEx) !== null) {
                     newNote = newNote.replace(regEx, `${item}`);
-                    console.log('newNote: ', newNote);
                 }
                 this.props.dispatch(noteTextChange(this.props.index, newNote));
             }
