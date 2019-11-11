@@ -1,3 +1,8 @@
+YOU CAN WRITE TAGS BELOW NOTE TEXT INPUT OR WRITE #hashtag IN NOTE TEXT INPUT
+
+SURGE LINK -  http://left-base.surge.sh/
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
